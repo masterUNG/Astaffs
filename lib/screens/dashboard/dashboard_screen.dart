@@ -109,6 +109,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     SharedPreferences preferences = await SharedPreferences.getInstance();
     int storeStep = preferences.getInt('storeStep');
     print('============== resume storeStep ==>> $storeStep ==============');
+
     if (storeStep == 4) {
       Navigator.pushAndRemoveUntil(
           context,
@@ -121,6 +122,10 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   Future<Null> setupStatus() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
+    int storeStep = preferences.getInt('storeStep');
+    if (storeStep == 0) {
+      return;
+    }
     preferences.setInt('storeStep', 4);
   }
 
@@ -311,24 +316,11 @@ class _DashboardScreenState extends State<DashboardScreen>
             },
           ),
           ListTile(
-            leading: Icon(Icons.account_circle),
-            title: Text('ข้อมูลพนักงาน '),
-            onTap: () {
+            leading: Icon(Icons.fitness_center),
+            title: Text('Fit And Firm'),
+            onTap: (){
               Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.branding_watermark),
-            title: Text('สวัสดิการ'),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.data_usage),
-            title: Text('กองทุนกู้ยืมเพื่อสวัสดิการ'),
-            onTap: () {
-              Navigator.pop(context);
+              Navigator.pushNamed(context, '/fit_and_firm');
             },
           ),
           ListTile(
@@ -340,16 +332,8 @@ class _DashboardScreenState extends State<DashboardScreen>
             },
           ),
           ListTile(
-            leading: Icon(Icons.photo),
-            title: Text('ถ่ายภาพและอัพโหลด'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/camera_and_upload');
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.timelapse),
-            title: Text('ดูข้อมูลประวัติการลงเวลา'),
+            title: Text('รายงานการลา'),
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, '/showtimedetail');

@@ -57,7 +57,8 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: appTheme(),
       initialRoute: initURL,
-      routes: routes,
+      // routes: routes,
+      onGenerateRoute: getRoute,
     );
   }
 }

@@ -59,7 +59,7 @@ class _ShowTimeDetailState extends State<ShowTimeDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ข้อมูลลงเวลาทำงาน'),
+        title: Text('รายงานการลา'),
       ),
       body: empleaveModels.length == 0
           ? MyStyle().showProgress()

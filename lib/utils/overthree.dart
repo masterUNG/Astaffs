@@ -18,10 +18,8 @@ Future<Null> alertOverThree(BuildContext context, String string) async {
           children: [
             TextButton(
               onPressed: () async {
-                SharedPreferences preferences =
-                    await SharedPreferences.getInstance();
-                String storeDeviceIMEI =
-                    preferences.getString('storeDeviceIMEI');
+                SharedPreferences preferences = await SharedPreferences.getInstance();
+                String storeDeviceIMEI = preferences.getString('storeDeviceIMEI');
                 String pass = preferences.getString('pass');
                 print(
                     'stroreDeviceIMEI ===>>> $storeDeviceIMEI, ###### pass = $pass');
