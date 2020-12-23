@@ -23,6 +23,7 @@ class _FitAndFirmInfoState extends State<FitAndFirmInfo> {
   FAFActivitySumDetailRs activitySumDetailRs;
   FAFActivityGoalRs activityGoalRs;
   FAFActivityGoal fafActivityGoal;
+  bool refreshSuccess = true;
 
   @override
   void initState() {
@@ -42,7 +43,6 @@ class _FitAndFirmInfoState extends State<FitAndFirmInfo> {
     }
   }
 
-  bool refreshSuccess;
 
   Future<Null> loadActivityList() async {
     try {
@@ -50,8 +50,10 @@ class _FitAndFirmInfoState extends State<FitAndFirmInfo> {
       String imei = preferences.getString('storeDeviceIMEI');
       String pass = preferences.getString('pass');
       BaacRestApiService service = BaacRestApiService();
-      FAFActivityDetailRs fafActivityDetailRs = await service.fafActivityDetail(imei, pass);
-      await SharedPrefUtil.save(SharedPrefKey.FIT_AND_FIRM_DETAIL, fafActivityDetailRs.toJson());
+      activityDetailRs = await service.fafActivityDetail(imei, pass);
+      activitySumDetailRs = await service.fafActivitySumDetail(imei, pass);
+      await SharedPrefUtil.save(SharedPrefKey.FIT_AND_FIRM_DETAIL, activityDetailRs.toJson());
+      await SharedPrefUtil.save(SharedPrefKey.FIT_AND_FIRM_SUM, activityDetailRs.toJson());
       setState(() {
         refreshSuccess = true;
       });
@@ -118,27 +120,30 @@ class _FitAndFirmInfoState extends State<FitAndFirmInfo> {
   }
 
   Widget buildCardActivityProgress(BuildContext context) {
-    num distance;
-    num distanceGoal;
-    num goal10;
-    num goal30;
+    double distance = 0;
+    double distanceGoal = 0;
+    double goal10 = 0;
+    double goal30 = 0;
 
-    String distancePercent;
+    String distanceStr = '';
+
+    String distancePercent = '';
     double distancePercentDouble = 0;
-    String activityType;
+    String activityType = '';
 
     if (activitySumDetailRs != null) {
-      distance = StringUtil.isNullOrEmpty(activitySumDetailRs.distanceSum) ? null : num.parse(activitySumDetailRs.distanceSum);
-      distanceGoal = StringUtil.isNullOrEmpty(activitySumDetailRs.goal) == null ? null : num.parse(activitySumDetailRs.goal);
+      distance = StringUtil.isNullOrEmpty(activitySumDetailRs.distanceSum) ? null : double.parse(activitySumDetailRs.distanceSum);
+      distanceStr = distance?.toStringAsFixed(3);
+      distanceGoal = StringUtil.isNullOrEmpty(activitySumDetailRs.goal) == null ? null : double.parse(activitySumDetailRs.goal);
       activityType = activitySumDetailRs.activity;
     }
     if (activityGoalRs != null && activityGoalRs.fafActivityGoals != null && activityGoalRs.fafActivityGoals.isNotEmpty) {
       fafActivityGoal = activityGoalRs.fafActivityGoals.firstWhere((element) => element.type == activityType);
       if (fafActivityGoal != null) {
-        goal10 = num.parse(fafActivityGoal.goal10);
-        goal30 = num.parse(fafActivityGoal.goal30);
-        distancePercent = '${(distance / distanceGoal) * 100}';
-        distancePercentDouble = double.parse(distancePercent);
+        goal10 = double.parse(fafActivityGoal.goal10);
+        goal30 = double.parse(fafActivityGoal.goal30);
+        distancePercentDouble = (distance / distanceGoal) * 100;
+        distancePercent = '${(distancePercentDouble).toStringAsFixed(3)}';
       }
     }
 
@@ -157,7 +162,7 @@ class _FitAndFirmInfoState extends State<FitAndFirmInfo> {
                   style: TextStyle(fontSize: 18, color: Colors.black54),
                 ),
                 Text(
-                  activitySumDetailRs?.distanceSum ?? '',
+                  distanceStr ?? '',
                   style: TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -174,7 +179,7 @@ class _FitAndFirmInfoState extends State<FitAndFirmInfo> {
                 children: [
                   Expanded(
                     child: Text(
-                      'จากเป้าหมาย ${activitySumDetailRs?.goal} ${fafActivityGoal?.unit} ',
+                      'จากเป้าหมาย ${activitySumDetailRs?.goal ?? ''} ${fafActivityGoal?.unit ?? ''} ',
                       style: TextStyle(fontSize: 16, color: Colors.black54),
                       textAlign: TextAlign.center,
                     ),
@@ -213,14 +218,14 @@ class _FitAndFirmInfoState extends State<FitAndFirmInfo> {
                   if (distancePercentDouble < 30)
                     Expanded(
                       child: Text(
-                        'คุณพิชิตกิจกรรม $distancePercentDouble% แล้ว พยายามเข้า',
+                        'คุณพิชิตกิจกรรม $distancePercent% แล้ว พยายามเข้า',
                         style: TextStyle(fontSize: 18, color: Colors.black54),
                       ),
                     ),
                   if (distancePercentDouble >= 30 && distancePercentDouble < 100)
                     Expanded(
                       child: Text(
-                        'ยินดีด้วยคุณพิชิตกิจกรรม 30% ได้แล้ว เตรียมรับเสื้อได้เลย ขณะนี้คุณทำได้ $distancePercentDouble% ใกล้ถึงจุดหมายแล้ว',
+                        'ยินดีด้วยคุณพิชิตกิจกรรม 30% ได้แล้ว เตรียมรับเสื้อได้เลย ขณะนี้คุณทำได้ $distancePercent% ใกล้ถึงจุดหมายแล้ว',
                         style: TextStyle(fontSize: 18, color: Colors.black54),
                       ),
                     ),

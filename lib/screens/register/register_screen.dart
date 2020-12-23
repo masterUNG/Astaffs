@@ -1,5 +1,5 @@
-
 import 'package:ASmartApp/models/register_model.dart';
+import 'package:ASmartApp/utils/dialog_util.dart';
 import 'package:ASmartApp/utils/normal_dialog.dart';
 import 'package:ASmartApp/utils/utility.dart';
 import 'package:connectivity/connectivity.dart';
@@ -29,7 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _imeiNumber;
   String _macAddress;
 
-  double lat, lng;
+  double lat = 0, lng = 0;
 
   // ฟังก์ชันอ่านข้อมูล IMEI และ Mac Address
   Future<void> initPlatformState() async {
@@ -37,8 +37,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     String macAddress = "Unknown";
 
     try {
-      imeiNumber =
-          await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
+      imeiNumber = await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
       macAddress = await GetMac.macAddress;
     } on PlatformException {
       macAddress = "Faild to get Device MAC Address";
@@ -123,8 +122,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextFormField(
                                 autofocus: false,
                                 keyboardType: TextInputType.number,
-                                style:
-                                    TextStyle(fontSize: 24, color: Colors.teal),
+                                style: TextStyle(fontSize: 24, color: Colors.teal),
                                 decoration: InputDecoration(
                                     icon: Icon(
                                       Icons.person,
@@ -152,8 +150,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextFormField(
                                 autofocus: false,
                                 keyboardType: TextInputType.number,
-                                style:
-                                    TextStyle(fontSize: 24, color: Colors.teal),
+                                style: TextStyle(fontSize: 24, color: Colors.teal),
                                 decoration: InputDecoration(
                                     icon: Icon(
                                       Icons.credit_card,
@@ -193,8 +190,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         if (formKey.currentState.validate()) {
                           formKey.currentState.save();
-                          print(
-                              'empid ==>$empID, cizid ==>> $cizID, _imeiNumber ==>> $_imeiNumber');
+                          print('empid ==>$empID, cizid ==>> $cizID, _imeiNumber ==>> $_imeiNumber');
 
                           Map<String, dynamic> map = Map();
                           map['EmpID'] = empID;
@@ -205,7 +201,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                           print('map ===>> ${map.toString()}');
 
-                          _register(map);
+
+                          Navigator.pushNamed(context, '/consent', arguments: map);
+
+                          // _register(map);
 
                           // var empData = {'empid': empID, 'cizid': cizID};
                           // var empData = {
@@ -220,16 +219,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                       },
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                         child: Text(
                           'ลงทะเบียน',
                           style: TextStyle(fontSize: 30, color: Colors.white),
                         ),
                       ),
                       color: Colors.green,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     )
                   ],
                 ),
@@ -250,23 +247,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // ถ้า offline อยู่
       print('คุณยังไม่ได้เชื่อมต่ออินเตอร์เน็ต');
       // แสดง alert popup
-      Utility.getInstance().showAlertDialog(
-          context, 'ออฟไลน์', 'คุณยังไม่ได้เชื่อมต่ออินเตอร์เน็ต');
+      Utility.getInstance().showAlertDialog(context, 'ออฟไลน์', 'คุณยังไม่ได้เชื่อมต่ออินเตอร์เน็ต');
     } else {
       // ถ้า online แล้ว
       // เรียกต่อ API ลงทะเบียน
+      DialogUtil.showLoadingDialog(context);
       var response = await CallAPI().postData(empData, 'Register/');
       // print('########## response ===>>> $response ############');
+
+      Navigator.pop(context);
 
       for (var json in response) {
         RegisterBaacModel model = RegisterBaacModel.fromJson(json);
 
         if (model.statusCode == '01') {
-          SharedPreferences sharedPreferences =
-              await SharedPreferences.getInstance();
+          SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-          sharedPreferences.setString(
-              'storeDeviceIMEI', _imeiNumber); // เก็บ EMEI
+          sharedPreferences.setString('storeDeviceIMEI', _imeiNumber); // เก็บ EMEI
           sharedPreferences.setString('storeEmpID', empID); // รหัสพนักงาน
           sharedPreferences.setString('EmpName', model.empName); // ชื่อพนักงาน
           sharedPreferences.setInt('storeStep', 1);

@@ -3,6 +3,7 @@ import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_activity_attachment_rs.da
 import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_activity_detail_rs.dart';
 import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_activity_goal_rs.dart';
 import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_activity_sum_detail_rs.dart';
+import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_check_register_rs.dart';
 import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_time_duration_rs.dart';
 import 'package:ASmartApp/services/baac_rest_api_service.dart';
 import 'package:ASmartApp/services/rest_api.dart';
@@ -19,6 +20,10 @@ class FitAndFirmHome extends StatefulWidget {
 
 class _FitAndFirmHomeState extends State<FitAndFirmHome> {
   FAFActivityTimeDurationRs _activityTimeDurationRs;
+  FAFActivityDetailRs fafActivityDetailRs;
+  FAFActivitySumDetailRs fafActivitySumDetailRs;
+  FAFCheckRegisterRs fafCheckRegisterRs;
+
   bool _loadFafConfigSuccess = false;
 
   Future<Null> readFafConfig() async {
@@ -31,29 +36,44 @@ class _FitAndFirmHomeState extends State<FitAndFirmHome> {
       var timeDurationTask = service.fafActivityTimeDurations(imei, pass);
       var activityGoalTask = service.fafActivityGoals(imei, pass);
       // var activityAttachmentTask = service.fafActivityAttachment(imei, pass);
-      var activityDetailListTask = service.fafActivityDetail(imei, pass);
-      var activitySumDetailTask = service.fafActivitySumDetail(imei, pass);
+      var checkRegisterTask = service.fafCheckRegister(imei, pass);
 
       await Future.delayed(Duration(milliseconds: 5000));
       await Future.wait([
         timeDurationTask,
         activityGoalTask,
-        activityDetailListTask,
-        activitySumDetailTask,
-        // activityAttachmentTask
-      ]);
+        // activityAttachmentTask,
+        checkRegisterTask,
 
+        // activityDetailListTask,
+        // activitySumDetailTask,
+      ]);
       _activityTimeDurationRs = await timeDurationTask;
       FAFActivityGoalRs activityGoalRs = await activityGoalTask;
       // FAFActivityAttachmentRs fafActivityAttachmentRs = await activityAttachmentTask;
-      FAFActivityDetailRs fafActivityDetailRs = await activityDetailListTask;
-      FAFActivitySumDetailRs fafActivitySumDetailRs = await activitySumDetailTask;
+      fafCheckRegisterRs = await checkRegisterTask;
 
       await SharedPrefUtil.save(SharedPrefKey.FIT_AND_FIRM_TIME_DUTATION, _activityTimeDurationRs.toJson());
       await SharedPrefUtil.save(SharedPrefKey.FIT_AND_FIRM_GOAL, activityGoalRs.toJson());
       // await SharedPrefUtil.save(SharedPrefKey.FIT_AND_FIRM_ATTACHMENT, fafActivityAttachmentRs.toJson());
-      await SharedPrefUtil.save(SharedPrefKey.FIT_AND_FIRM_DETAIL, fafActivityDetailRs.toJson());
-      await SharedPrefUtil.save(SharedPrefKey.FIT_AND_FIRM_SUM, fafActivitySumDetailRs.toJson());
+
+      if (fafCheckRegisterRs == null || fafCheckRegisterRs.fafCheckRegisters == null || fafCheckRegisterRs.fafCheckRegisters.isEmpty || fafCheckRegisterRs.fafCheckRegisters[0].statusCode == '01') {
+        try {
+          var activityDetailListTask = service.fafActivityDetail(imei, pass);
+          var activitySumDetailTask = service.fafActivitySumDetail(imei, pass);
+          await Future.wait([
+            activityDetailListTask,
+            activitySumDetailTask,
+          ]);
+
+          fafActivityDetailRs = await activityDetailListTask;
+          fafActivitySumDetailRs = await activitySumDetailTask;
+          await SharedPrefUtil.save(SharedPrefKey.FIT_AND_FIRM_DETAIL, fafActivityDetailRs.toJson());
+          await SharedPrefUtil.save(SharedPrefKey.FIT_AND_FIRM_SUM, fafActivitySumDetailRs.toJson());
+        } catch (error, stackTrace) {
+          print(error);
+        }
+      }
 
       setState(() {
         _loadFafConfigSuccess = true;
@@ -87,15 +107,36 @@ class _FitAndFirmHomeState extends State<FitAndFirmHome> {
                     buildGreenButton(
                       Icons.save,
                       'บันทึกผลการออกกำลังกาย',
-                      () {
-                        Navigator.pushNamed(context, '/fit_and_frim_save_activity');
+                      () async {
+                        if (fafCheckRegisterRs == null || fafCheckRegisterRs.fafCheckRegisters == null || fafCheckRegisterRs.fafCheckRegisters.isEmpty) {
+                          DialogUtil.showWarningDialog(context, 'แจ้งเตือน', 'ไม่พบข้อมูล เกิดข้อผิดพลาดในการดึงข้อมูลสถานะการสมัคร');
+                          return;
+                        }
+                        if (fafCheckRegisterRs.fafCheckRegisters[0].statusCode != '01') {
+                          DialogUtil.showWarningDialog(context, 'แจ้งเตือน', 'คุณยังไม่ได้ลงทะเบียน ไม่สามารถบันทึกผลกิจกรรมได้');
+                          return;
+                        }
+                        dynamic saveResult = await Navigator.pushNamed(context, '/fit_and_frim_save_activity');
+                        if (saveResult == null) {
+                          return;
+                        }
+                        bool saveSuccess = saveResult as bool;
+                        if (saveSuccess) {
+                          setState(() {
+                            _loadFafConfigSuccess = false;
+                          });
+                          readFafConfig();
+                        }
                       },
                     ),
                     buildGreenButton(
                       Icons.info,
                       'การออกกำลังกายของฉัน',
                       () {
-                        print('การออกกำลังกายของฉัน');
+                        if (fafActivityDetailRs == null) {
+                          DialogUtil.showWarningDialog(context, 'แจ้งเตือน', 'ไม่พบข้อมูล ผลกิจกรรม');
+                          return;
+                        }
                         Navigator.pushNamed(context, '/fit_and_firm_info');
                       },
                       buttonColorLevel: 400,
@@ -110,8 +151,26 @@ class _FitAndFirmHomeState extends State<FitAndFirmHome> {
                     buildGreenButton(
                       Icons.app_registration,
                       'สมัครเลย',
-                      () {
-                        Navigator.pushNamed(context, '/fit_and_firm_register');
+                      () async {
+                        if (fafCheckRegisterRs == null || fafCheckRegisterRs.fafCheckRegisters == null || fafCheckRegisterRs.fafCheckRegisters.isEmpty) {
+                          DialogUtil.showWarningDialog(context, 'แจ้งเตือน', 'ไม่พบข้อมูล เกิดข้อผิดพลาดในการดึงข้อมูลสถานะการสมัคร');
+                          return;
+                        }
+                        if (fafCheckRegisterRs.fafCheckRegisters[0].statusCode == '01') {
+                          DialogUtil.showWarningDialog(context, 'แจ้งเตือน', 'คุณลงทะเบียนแล้ว ไม่สามารถลงทะเบียนกิจกรรมได้');
+                          return;
+                        }
+                        dynamic registerResult = await Navigator.pushNamed(context, '/fit_and_firm_register');
+                        if (registerResult == null) {
+                          return;
+                        }
+                        bool registerSuccess = registerResult as bool;
+                        if (registerSuccess) {
+                          setState(() {
+                            _loadFafConfigSuccess = false;
+                          });
+                          readFafConfig();
+                        }
                       },
                       buttonColorLevel: 400,
                     ),

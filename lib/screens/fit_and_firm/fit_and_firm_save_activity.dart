@@ -354,7 +354,8 @@ class _FitAndFirmSaveActivityState extends State<FitAndFirmSaveActivity> {
                 throw ValidateException('${fafAddActivityRs.statusDesc}');
               }
               await DialogUtil.showSuccessDialog(context, fafAddActivityRs.statusDesc ?? '', 'บันทึกข้อมูลการออกกำลังกายเรียบร้อมแล้ว');
-              Navigator.pop(context);
+
+              Navigator.pop(context, true);
             } catch (error, stackTrace) {
               if (error is ValidateException) {
                 DialogUtil.showWarningDialog(context, 'แจ้งเตือน', '${error.message}');

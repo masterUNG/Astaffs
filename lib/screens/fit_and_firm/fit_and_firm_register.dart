@@ -238,7 +238,7 @@ class _FitAndFirmRegisterState extends State<FitAndFirmRegister> {
         }
 
         await DialogUtil.showSuccessDialog(context, fafRegisterRs.statusDesc ?? '', 'บันทึกข้อมูลการสมัครเรียบร้อมแล้ว');
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       },
     );
   }

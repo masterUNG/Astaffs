@@ -55,7 +55,8 @@ Route<dynamic> getRoute(RouteSettings settings) {
     case '/register':
       return MaterialPageRoute(settings: settings, builder: (_) => RegisterScreen());
     case '/consent':
-      return MaterialPageRoute(settings: settings, builder: (_) => ConsentScreen());
+      final Map<String, dynamic> registerRq = settings.arguments;
+      return MaterialPageRoute(settings: settings, builder: (_) => ConsentScreen(registerRq));
     case '/pincode':
       return MaterialPageRoute(settings: settings, builder: (_) => PinCodeScreen());
     case '/setpassword':
