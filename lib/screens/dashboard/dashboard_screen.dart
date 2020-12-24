@@ -85,9 +85,16 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 
   @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+    print('============== initState Work ==============');
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // TODO: implement didChangeAppLifecycleState
-    super.didChangeAppLifecycleState(state);
+    // super.didChangeAppLifecycleState(state);
 
     switch (state) {
       case AppLifecycleState.inactive:
@@ -129,12 +136,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     preferences.setInt('storeStep', 4);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    print('============== initState Work ==============');
-    WidgetsBinding.instance.removeObserver(this);
-  }
+
 
   // สร้างตัวแบบ list เก็บรายการหน้าของ tab bottom
   int _currentIndex = 0;
