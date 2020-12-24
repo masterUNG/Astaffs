@@ -77,6 +77,7 @@ class _FitAndFirmSaveActivityState extends State<FitAndFirmSaveActivity> {
     });
     // ปิด popup
     Navigator.of(context).pop();
+    await Future.delayed(Duration(milliseconds: 1000));
     preferences.setInt('storeStep', 4);
   }
 
@@ -95,6 +96,7 @@ class _FitAndFirmSaveActivityState extends State<FitAndFirmSaveActivity> {
     });
     // ปิด popup
     Navigator.of(context).pop();
+    await Future.delayed(Duration(milliseconds: 1000));
     preferences.setInt('storeStep', 4);
   }
 
