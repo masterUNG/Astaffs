@@ -72,7 +72,7 @@ class _FitAndFirmInfoState extends State<FitAndFirmInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ข้อมูลการออกกำลังกายของฉัน'),
+        title: Text('ผลการออกกำลังกายของฉัน'),
       ),
       body: SafeArea(
         child: RefreshIndicator(

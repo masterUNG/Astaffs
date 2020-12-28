@@ -14,7 +14,7 @@ class FitAndFirmInfoDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('รายละเอียดรายการออกกำลังกาย'),
+        title: Text('ผลการออกกำลังกายของฉัน'),
       ),
       body: SafeArea(
         child: ListView(
