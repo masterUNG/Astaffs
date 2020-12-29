@@ -367,11 +367,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         'สวัสดี',
-                        style: TextStyle(fontSize: 18, color: Colors.white),
+                        style: TextStyle(fontSize: 15, color: Colors.white),
                       ),
                       Text(
                         '$_fullnameAccount',
-                        style: TextStyle(fontSize: 20, color: Colors.white),
+                        style: TextStyle(fontSize: 14, color: Colors.white),
                       ),
                     ],
                   ),

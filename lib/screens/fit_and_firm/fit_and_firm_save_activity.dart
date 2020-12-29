@@ -110,7 +110,7 @@ class _FitAndFirmSaveActivityState extends State<FitAndFirmSaveActivity> {
               children: [
                 ListTile(
                   leading: Icon(Icons.photo_album),
-                  title: Text('แกเลอรี่'),
+                  title: Text('แกลเลอรี'),
                   onTap: () {
                     _openGallery(context);
                   },
