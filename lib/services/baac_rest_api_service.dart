@@ -11,6 +11,7 @@ import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_register_rq.dart';
 import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_register_rs.dart';
 import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_time_duration_rs.dart';
 import 'package:ASmartApp/models/news_baac_model.dart';
+import 'package:ASmartApp/models/rqrs/user_session/user_profile_rs.dart';
 import 'package:ASmartApp/services/base_baac_webapi_service.dart';
 
 class BaacRestApiService extends BaseBaacWebApiService {
@@ -148,6 +149,25 @@ class BaacRestApiService extends BaseBaacWebApiService {
       '${baseUrl}FAFActivitySumDetail/',
       _dataRq,
       (data) => FAFActivitySumDetailRs.fromJson(data),
+    );
+  }
+
+  Future<UserProfileRs> empDetail(String imei, String pass) async {
+    Map<String, dynamic> _dataRq = Map();
+    _dataRq['IMEI'] = imei;
+    _dataRq['pass'] = pass;
+
+    return await post(
+      '${baseUrl}EmpDetail/',
+      _dataRq,
+      (data) {
+        UserProfileRs rs = UserProfileRs()..userProfiles = [];
+        for (var json in data) {
+          UserProfile model = UserProfile.fromJson(json);
+          rs.userProfiles.add(model);
+        }
+        return rs;
+      },
     );
   }
 }

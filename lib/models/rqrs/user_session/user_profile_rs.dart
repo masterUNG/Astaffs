@@ -1,7 +1,25 @@
+class UserProfileRs {
+  List<UserProfile> userProfiles;
 
+  UserProfileRs({this.userProfiles});
 
+  UserProfileRs.fromJson(Map<String, dynamic> json) {
+    if (json['userProfiles'] != null) {
+      userProfiles = new List<UserProfile>();
+      json['userProfiles'].forEach((v) {
+        userProfiles.add(new UserProfile.fromJson(v));
+      });
+    }
+  }
 
-
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.userProfiles != null) {
+      data['userProfiles'] = this.userProfiles.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
 
 class UserProfile {
   String eMPLOYEEID;
@@ -25,27 +43,7 @@ class UserProfile {
   String lABORUNIONID;
   String date;
 
-  UserProfile(
-      {this.eMPLOYEEID,
-        this.pNAMETH,
-        this.rANK,
-        this.fNAMETH,
-        this.lNAMETH,
-        this.cITIZENID,
-        this.pOSITIONNAME,
-        this.oRGANISATIONID,
-        this.oRGANISATIONNAME,
-        this.cOSTCENTERID,
-        this.cOSTCENTERNAME,
-        this.eMPLOYMENTDATE,
-        this.sALARY,
-        this.bIRTHDATE,
-        this.mARRIAGESTATUS,
-        this.aDDRESS,
-        this.sALARYACCNO,
-        this.cREMATIONWELFAREID,
-        this.lABORUNIONID,
-        this.date});
+  UserProfile({this.eMPLOYEEID, this.pNAMETH, this.rANK, this.fNAMETH, this.lNAMETH, this.cITIZENID, this.pOSITIONNAME, this.oRGANISATIONID, this.oRGANISATIONNAME, this.cOSTCENTERID, this.cOSTCENTERNAME, this.eMPLOYMENTDATE, this.sALARY, this.bIRTHDATE, this.mARRIAGESTATUS, this.aDDRESS, this.sALARYACCNO, this.cREMATIONWELFAREID, this.lABORUNIONID, this.date});
 
   UserProfile.fromJson(Map<String, dynamic> json) {
     eMPLOYEEID = json['EMPLOYEE_ID'];
