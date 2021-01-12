@@ -3,7 +3,10 @@ import 'package:ASmartApp/models/emp_value_model.dart';
 import 'package:ASmartApp/models/pf_policy_model.dart';
 import 'package:ASmartApp/services/rest_api.dart';
 import 'package:ASmartApp/utils/my_style.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
+import 'package:ASmartApp/themes/theme.dart';
 
 class BenefitScreen extends StatefulWidget {
   BenefitScreen({Key key}) : super(key: key);
@@ -13,38 +16,38 @@ class BenefitScreen extends StatefulWidget {
 }
 
 class _BenefitScreenState extends State<BenefitScreen> {
-  List<BenefitModel> benefitModels = List();
-  List<Widget> widgets = List();
-  Map<String, dynamic> map = Map();
+  Map<String, dynamic> mapImeiPass = Map();
+
   PfPolicyModel pfPolicyModel;
   EmpPFValueModel empPFValueModel;
+  List<BenefitModel> benefitModels = List();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    map['IMEI'] = 'baac1234';
-    map['pass'] = 'baac';
+    mapImeiPass['IMEI'] = 'baac1234';
+    mapImeiPass['pass'] = 'baac';
 
     readBenefit();
     readEmpPFPolicy();
     readEmpPFValue();
   }
 
-  Future<Null> readEmpPFValue() async {
-    String url = 'EmpPFValue';
-    var result = await CallAPI().postData(map, url);
+  Future<Null> readBenefit() async {
+    String url = 'benefits';
+    var result = await CallAPI().postData(mapImeiPass, url);
     for (var json in result) {
+      BenefitModel model = BenefitModel.fromJson(json);
       setState(() {
-        empPFValueModel = EmpPFValueModel.fromJson(json);
+        benefitModels.add(model);
       });
     }
   }
 
   Future<Null> readEmpPFPolicy() async {
     String url = 'EmpPFPolicy';
-    var result = await CallAPI().postData(map, url);
+    var result = await CallAPI().postData(mapImeiPass, url);
     for (var json in result) {
       setState(() {
         pfPolicyModel = PfPolicyModel.fromJson(json);
@@ -52,192 +55,239 @@ class _BenefitScreenState extends State<BenefitScreen> {
     }
   }
 
-  List<Widget> policyWidgets() {
-    return <Widget>[
-      Row(
-        children: [
-          Text('รหัสพนักงาน :'),
-          Text(pfPolicyModel.eMPLOYEEID),
-        ],
-      ),
-      Row(
-        children: [
-          Text('ลำดับที่นโยบาย :'),
-          Text(pfPolicyModel.pOLICY),
-        ],
-      ),
-      Row(
-        children: [
-          Text('จำนวนกองทุนตราสารหนี :'),
-          Text(pfPolicyModel.iNSTRUMENTPERCENT),
-        ],
-      ),
-      Row(
-        children: [
-          Text('จำนวนกองทุดตราสารทุน :'),
-          Text(pfPolicyModel.eQUITYPERCENT),
-        ],
-      ),
-      Row(
-        children: [
-          Text('อัดตราสมทบลูกจ่้าง :'),
-          Text(pfPolicyModel.eMPCONTRIBUTEPERCENT),
-        ],
-      ),
-      Row(
-        children: [
-          Text('อัดตราสมทบนายจ้าง :'),
-          Text(pfPolicyModel.cOMPANYCONTRIBUTEPERCENT),
-        ],
-      ),
-    ].toList();
-  }
-
-  Future<Null> readBenefit() async {
-    String url = 'benefits';
-
-    var result = await CallAPI().postData(map, url);
-    print('######### result --->>> $result');
-
+  Future<Null> readEmpPFValue() async {
+    String url = 'EmpPFValue';
+    var result = await CallAPI().postData(mapImeiPass, url);
     for (var json in result) {
-      BenefitModel model = BenefitModel.fromJson(json);
-      Widget myWidget = createWidget(model);
       setState(() {
-        benefitModels.add(model);
-        widgets.add(myWidget);
+        empPFValueModel = EmpPFValueModel.fromJson(json);
       });
     }
   }
 
-  Widget createWidget(BenefitModel model) => Card(
-        child: ListTile(
-          leading: Icon(Icons.pets),
-          title: Text(model.listName),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(MyStyle().formatAmount(model.amount)),
-              Text(model.postDate),
-            ],
-          ),
-        ),
-      );
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: (widgets.length == 0) ||
-              (pfPolicyModel == null) ||
-              (empPFValueModel == null)
+      body: (benefitModels.isEmpty) || (pfPolicyModel == null) || (empPFValueModel == null)
           ? MyStyle().showProgress()
           : SingleChildScrollView(
               child: Column(
                 children: [
-                  buildCardBenefit(),
-                  buildCardPolicy(),
-                  buildCardEmpValue()
+                  buildCardBenefit(context),
+                  buildCardPolicy(context),
+                  buildCardEmpValue(context),
                 ],
               ),
             ),
     );
   }
 
-  Card buildCardEmpValue() {
-    return Card(
-      color: Color(0xff4b830d),
-      child: ExpansionTile(
-        title: Text(
-          'ผลตอบแทนการลงทุน :',
-          style: TextStyle(color: Colors.white),
+  Widget buildCardEmpValue(BuildContext context) {
+    return ExpandableNotifier(
+      child: ScrollOnExpand(
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: <Widget>[
+              ExpandablePanel(
+                theme: const ExpandableThemeData(
+                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                  tapBodyToExpand: true,
+                  tapBodyToCollapse: true,
+                  hasIcon: false,
+                ),
+                header: Container(
+                  color: Color(0xff4b830d),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    'ผลตอบแทนการลงทุน',
+                                    style: Theme.of(context).textTheme.largeWhite,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ExpandableIcon(
+                          theme: const ExpandableThemeData(
+                            expandIcon: Icons.keyboard_arrow_down,
+                            collapseIcon: Icons.keyboard_arrow_up,
+                            iconColor: Colors.white,
+                            iconSize: 28.0,
+                            iconRotationAngle: math.pi / 2,
+                            iconPadding: EdgeInsets.only(right: 5),
+                            hasIcon: false,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                expanded: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'รหัสพนักงาน : ${empPFValueModel?.eMPLOYEEID ?? ''}',
+                            style: Theme.of(context).textTheme.smallBlack,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'ข้อมูล ณ วันที่ : ${empPFValueModel?.nAVDATE ?? ''}',
+                            style: Theme.of(context).textTheme.smallBlack,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'นโยบาย : ${empPFValueModel?.pLANCODE ?? ''}',
+                            style: Theme.of(context).textTheme.smallBlack,
+                          ),
+                        ],
+                      ),
+                      buildCardEmpValueData(
+                        'มูลค่าหน่วยลงทุน',
+                        empPFValueModel?.cOMPANYFUND1,
+                        empPFValueModel?.nUNITFUND1,
+                        empPFValueModel?.cOMPANYFUND2,
+                        empPFValueModel?.nUNITFUND2,
+                        'หน่วย',
+                      ),
+                      buildCardEmpValueData(
+                        'ส่วนของสมาชิกเงินสะสม',
+                        empPFValueModel?.cOMPANYFUND1,
+                        empPFValueModel?.cONTEFUND1,
+                        empPFValueModel?.cOMPANYFUND2,
+                        empPFValueModel?.cONTEFUND2,
+                        'บาท',
+                      ),
+                      buildCardEmpValueData(
+                        'ส่วนของสมาชิกผลประโยชน์',
+                        empPFValueModel?.cOMPANYFUND1,
+                        empPFValueModel?.eARNEFUND1,
+                        empPFValueModel?.cOMPANYFUND2,
+                        empPFValueModel?.eARNEFUND2,
+                        'บาท',
+                      ),
+                      buildCardEmpValueData(
+                        'ส่วนของนายจ้างเงินสมทบ',
+                        empPFValueModel?.cOMPANYFUND1,
+                        empPFValueModel?.cONTCFUND1,
+                        empPFValueModel?.cOMPANYFUND2,
+                        empPFValueModel?.cONTCFUND2,
+                        'บาท',
+                      ),
+                      buildCardEmpValueData(
+                        'ส่วนของนายจ้างผลประโยชน์',
+                        empPFValueModel?.cOMPANYFUND1,
+                        empPFValueModel?.eARNCFUND1,
+                        empPFValueModel?.cOMPANYFUND2,
+                        empPFValueModel?.eARNCFUND2,
+                        'บาท',
+                      ),
+                      buildCardEmpValueData(
+                        'จำนวนเงินรวม',
+                        empPFValueModel?.cOMPANYFUND1,
+                        empPFValueModel?.tOTALFUND1,
+                        empPFValueModel?.cOMPANYFUND2,
+                        empPFValueModel?.tOTALFUND2,
+                        'บาท',
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top:8.0),
+                        child: Row(
+                          children: [
+                            Text(
+                              'ผลประโยชน์การลงทุน : ',
+                              style: Theme.of(context).textTheme.boldBlack,
+                            ),
+                            Expanded(
+                              child: Text(
+                                '${empPFValueModel?.tOTALFUND1FUND2 ?? ''} บาท',
+                                style: Theme.of(context).textTheme.boldRed,
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget buildCardEmpValueData(String header, String label1, String value1, String label2, String value2, String unit) {
+    return Card(
+      elevation: 2 ,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Text(
-                'รหัสพนักงาน :',
-                style: TextStyle(color: Colors.white),
-              ),
-              Text(
-                empPFValueModel.eMPLOYEEID,
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Text(
-                'ข้อมูล ณ วันที่ :',
-                style: TextStyle(color: Colors.white),
-              ),
-              Text(
-                empPFValueModel.nAVDATE,
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Text(
-                'นโยบาย :',
-                style: TextStyle(color: Colors.white),
-              ),
-              Text(
-                empPFValueModel.pLANCODE,
-                style: TextStyle(color: Colors.white),
+                header ?? '',
+                style: Theme.of(context).textTheme.boldBlack,
               ),
             ],
           ),
           Row(
             children: [
               Expanded(
-                flex: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('ชื่อบริษัทจัดการ'),
-                    Text('มูลค่าหน่วยลงทุน'),
-                    Text('ส่วนของสมาชิกเงินสะสม'),
-                    Text('ส่วนของสมาชิกผลประโยชน์'),
-                    Text('ส่วนของนายจ้างเงินสมทบ'),
-                    Text('ส่วนของนายจ้างผลประโยชน์'),
-                    Text('จำนวนเงินรวม'),
-                  ],
+                flex: 6,
+                child: Text(
+                  'บริษัทจัดการ  ${label1 ?? ''}   ',
+                  style: Theme.of(context).textTheme.smallGrey,
                 ),
               ),
               Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    Text(empPFValueModel.cOMPANYFUND1),
-                    Text(empPFValueModel.nUNITFUND1),
-                    Text(empPFValueModel.cONTEFUND1),
-                    Text(empPFValueModel.eARNEFUND1),
-                    Text(empPFValueModel.cONTCFUND1),
-                    Text(empPFValueModel.eARNCFUND1),
-                    Text(empPFValueModel.tOTALFUND1),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    Text(empPFValueModel.cOMPANYFUND2),
-                    Text(empPFValueModel.nUNITFUND2),
-                    Text(empPFValueModel.cONTEFUND2),
-                    Text(empPFValueModel.eARNEFUND2),
-                    Text(empPFValueModel.cONTCFUND2),
-                    Text(empPFValueModel.eARNCFUND2),
-                    Text(empPFValueModel.tOTALFUND2),
-                  ],
+                flex: 6,
+                child: Text(
+                  '${value1 ?? ''}  ${unit ?? ''}',
+                  style: Theme.of(context).textTheme.normalBlack,
+                  textAlign: TextAlign.end,
                 ),
               ),
             ],
           ),
-          Row(mainAxisAlignment: MainAxisAlignment.end,
+          Row(
             children: [
-              Text('ผลประโยชน์ การลงทุน'),
-              Text(empPFValueModel.tOTALFUND1FUND2)
+              Expanded(
+                flex: 6,
+                child: Text(
+                  'บริษัทจัดการ  ${label2 ?? ''}',
+                  style: Theme.of(context).textTheme.smallGrey,
+                ),
+              ),
+              Expanded(
+                flex: 6,
+                child: Text(
+                  '${value2 ?? ''}  ${unit ?? ''}',
+                  style: Theme.of(context).textTheme.normalBlack,
+                  textAlign: TextAlign.end,
+                ),
+              ),
             ],
           ),
         ],
@@ -245,39 +295,197 @@ class _BenefitScreenState extends State<BenefitScreen> {
     );
   }
 
-  Card buildCardPolicy() {
-    return Card(
-      color: Color(0xff7cb342),
-      child: ExpansionTile(
-        title: Text('นโยบายการลงทุน :'),
-        children: policyWidgets(),
+  Widget buildCardPolicy(BuildContext context) {
+    return ExpandableNotifier(
+      child: ScrollOnExpand(
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: <Widget>[
+              ExpandablePanel(
+                theme: const ExpandableThemeData(
+                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                  tapBodyToExpand: true,
+                  tapBodyToCollapse: true,
+                  hasIcon: false,
+                ),
+                header: Container(
+                  color: Color(0xff7cb342), // color: colorPrimary,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    'นโยบายการลงทุน',
+                                    style: Theme.of(context).textTheme.largeBlack,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ExpandableIcon(
+                          theme: const ExpandableThemeData(
+                            expandIcon: Icons.keyboard_arrow_down,
+                            collapseIcon: Icons.keyboard_arrow_up,
+                            iconColor: Colors.black,
+                            iconSize: 28.0,
+                            iconRotationAngle: math.pi / 2,
+                            iconPadding: EdgeInsets.only(right: 5),
+                            hasIcon: false,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                expanded: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      buildCardPolicyData('รหัสพนักงาน', pfPolicyModel?.eMPLOYEEID ?? ''),
+                      buildCardPolicyData('ลำดับที่นโยบาย', pfPolicyModel?.pOLICY ?? ''),
+                      buildCardPolicyData('จำนวนกองทุนตราสารหนี', pfPolicyModel?.iNSTRUMENTPERCENT ?? ''),
+                      buildCardPolicyData('จำนวนกองทุดตราสารทุน', pfPolicyModel?.eQUITYPERCENT ?? ''),
+                      buildCardPolicyData('อัดตราสมทบลูกจ่้าง', pfPolicyModel?.eMPCONTRIBUTEPERCENT ?? ''),
+                      buildCardPolicyData('อัดตราสมทบนายจ้าง', pfPolicyModel?.cOMPANYCONTRIBUTEPERCENT ?? ''),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Card buildCardBenefit() {
-    return Card(
-      color: Color(0xffaee571),
-      child: ExpansionTile(
-        title: Text('สวัสดิการ :'),
-        children: widgets,
-      ),
+  Widget buildCardPolicyData(String label, String data) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              flex: 8,
+              child: Text(
+                '$label :',
+                style: Theme.of(context).textTheme.smallBlack,
+              ),
+            ),
+            Expanded(
+              flex: 4,
+              child: Text(
+                data,
+                style: Theme.of(context).textTheme.smallBlack,
+                textAlign: TextAlign.right,
+              ),
+            ),
+          ],
+        ),
+        Divider(
+          color: Colors.grey,
+        ),
+      ],
     );
   }
 
-  ListView buildListView() {
-    return ListView.builder(
-      itemCount: benefitModels.length,
-      itemBuilder: (context, index) => Card(
-        child: ListTile(
-          leading: Icon(Icons.pets),
-          title: Text(benefitModels[index].listName),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                  '${MyStyle().formatAmount(benefitModels[index].amount)} บาท'),
-              Text(benefitModels[index].postDate),
+  Widget buildCardBenefit(BuildContext context) {
+    return ExpandableNotifier(
+      child: ScrollOnExpand(
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: <Widget>[
+              ExpandablePanel(
+                  theme: const ExpandableThemeData(
+                    headerAlignment: ExpandablePanelHeaderAlignment.center,
+                    tapBodyToExpand: true,
+                    tapBodyToCollapse: true,
+                    hasIcon: false,
+                  ),
+                  header: Container(
+                    color: Color(0xffaee571),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      'สวัสดิการ',
+                                      style: Theme.of(context).textTheme.largeBlack,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          ExpandableIcon(
+                            theme: const ExpandableThemeData(
+                              expandIcon: Icons.keyboard_arrow_down,
+                              collapseIcon: Icons.keyboard_arrow_up,
+                              iconColor: Colors.black,
+                              iconSize: 28.0,
+                              iconRotationAngle: math.pi / 2,
+                              iconPadding: EdgeInsets.only(right: 5),
+                              hasIcon: false,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  expanded: ListView.separated(
+                    physics: ClampingScrollPhysics(),
+                    shrinkWrap: true,
+                    separatorBuilder: (context, index) => Divider(color: Colors.grey, height: 1),
+                    itemCount: benefitModels == null ? 0 : benefitModels.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: Icon(
+                          Icons.payment,
+                          size: 24,
+                        ),
+                        title: Text(
+                          benefitModels[index].listName,
+                          style: Theme.of(context).textTheme.smallBlack,
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  MyStyle().formatAmount(benefitModels[index].amount),
+                                  style: Theme.of(context).textTheme.largeBoldRed,
+                                ),
+                                Text(
+                                  ' บาท',
+                                  style: Theme.of(context).textTheme.smallGrey,
+                                ),
+                              ],
+                            ),
+                            Text(
+                              'วันที่ : ' + benefitModels[index].postDate,
+                              style: Theme.of(context).textTheme.smallBlack,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  )),
             ],
           ),
         ),

@@ -16,6 +16,12 @@ extension CustomTextStyles on TextTheme {
     fontSize: 30,
   );
 
+  TextStyle get boldRed => const TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Colors.red,
+    fontSize: 18,
+  );
+
   TextStyle get largeBoldRed => const TextStyle(
     color: Colors.red,
     fontWeight: FontWeight.bold,

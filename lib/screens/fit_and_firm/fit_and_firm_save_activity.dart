@@ -13,7 +13,6 @@ import 'package:ASmartApp/utils/string_util.dart';
 import 'package:flutter/material.dart';
 import 'package:ASmartApp/themes/theme.dart';
 import 'package:flutter/services.dart';
-import 'package:ASmartApp/themes/theme.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as Path;
 import 'dart:io';
