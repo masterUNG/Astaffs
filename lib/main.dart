@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     // Call Pushnotification
-    PushNotificationManager().initFirebaseMessaging();
+    // PushNotificationManager().initFirebaseMessaging();
   }
 
   @override

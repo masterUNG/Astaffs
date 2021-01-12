@@ -42,6 +42,11 @@ class _HomeScreenState extends State<HomeScreen> {
           await getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       _lat = position.latitude.toString();
       _lon = position.longitude.toString();
+      sharedPreferences = await SharedPreferences.getInstance();
+      String storeDeviceIMEI = sharedPreferences.getString('storeDeviceIMEI');
+      String pass = sharedPreferences.getString('pass');
+
+
       showDialog(
           context: context,
           builder: (BuildContext context) => SimpleDialog(
@@ -63,9 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: Text('ลงเวลาเข้าทำงาน'),
                     onTap: () {
                       Map<String, dynamic> body = {
-                        "IMEI": "baac1234",
-                        "latitude": "12",
-                        "longitude": "13",
+                        "IMEI": storeDeviceIMEI,
+                        "latitude": _lat??"12",
+                        "longitude": _lon??"13",
                         "Type": "1"
                       };
 
@@ -142,12 +147,8 @@ class _HomeScreenState extends State<HomeScreen> {
     // _fullnameAccount = widget.fullName;
 
     sharedPreferences = await SharedPreferences.getInstance();
-
     String storeDeviceIMEI = sharedPreferences.getString('storeDeviceIMEI');
-    print('storeDeviceIMEI ===>> $storeDeviceIMEI');
-
     String pass = sharedPreferences.getString('pass');
-    print('pass ==>> $pass');
 
     Map<String, dynamic> data = Map();
     data['IMEI'] = storeDeviceIMEI;
@@ -179,9 +180,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<Null> readNewsThread() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+    String storeDeviceIMEI = sharedPreferences.getString('storeDeviceIMEI');
+    String pass = sharedPreferences.getString('pass');
+
     Map<String, dynamic> map = Map();
-    map['IMEI'] = 'baac1234';
-    map['pass'] = 'baac';
+    map['IMEI'] = storeDeviceIMEI;
+    map['pass'] = pass;
 
     var result = await CallAPI().postData(map, 'News/');
     print('######### $result ###########');

@@ -250,7 +250,7 @@ class _DashboardScreenState extends State<DashboardScreen>
           child: GNav(
               gap: 4,
               activeColor: Colors.white,
-              iconSize: 24,
+              iconSize: 16,
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
               duration: Duration(milliseconds: 300),
               tabBackgroundColor: Colors.green[800],

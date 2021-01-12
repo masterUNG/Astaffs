@@ -5,6 +5,7 @@ import 'package:ASmartApp/utils/my_style.dart';
 // import 'package:baacstaff/utils/utility.dart';
 // import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ShowTimeDetail extends StatefulWidget {
   ShowTimeDetail({Key key}) : super(key: key);
@@ -15,17 +16,6 @@ class ShowTimeDetail extends StatefulWidget {
 
 class _ShowTimeDetailState extends State<ShowTimeDetail> {
   // ข้อมูล body payload สำหรับแนบไปกับ post
-  var bodyData = {'imei': 'baac1234', 'pass': 'baac'};
-
-  // ตัวแปรสำหรับไว้เก็บข้อมูลเช็ค pull to refresh
-  List<dynamic> _timeDetails = [];
-
-  Future<void> fetchTimeDetail() async {
-    var response = await CallAPI().baacPostTimeDetail(bodyData);
-    setState(() {
-      _timeDetails = response;
-    });
-  }
 
   List<EmpleaveModel> empleaveModels = List();
 
@@ -37,13 +27,15 @@ class _ShowTimeDetailState extends State<ShowTimeDetail> {
   }
 
   Future<Null> readData() async {
-    Map<String, dynamic> data = Map();
-    data['IMEI'] = 'baac1234';
-    data['pass'] = 'baac';
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+
+    Map<String, dynamic> mapImeiPass = Map();
+    mapImeiPass['IMEI'] = preferences.getString('storeDeviceIMEI');
+    mapImeiPass['pass'] = preferences.getString('pass');
 
     String urlPath = 'Empleave/';
 
-    await CallAPI().postData(data, urlPath).then((value) {
+    await CallAPI().postData(mapImeiPass, urlPath).then((value) {
       // print('########## value ShowTime ===>> $value ############');
 
       for (var json in value) {
