@@ -7,6 +7,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:ASmartApp/themes/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BenefitScreen extends StatefulWidget {
   BenefitScreen({Key key}) : super(key: key);
@@ -26,15 +27,16 @@ class _BenefitScreenState extends State<BenefitScreen> {
   void initState() {
     super.initState();
 
-    mapImeiPass['IMEI'] = 'baac1234';
-    mapImeiPass['pass'] = 'baac';
-
     readBenefit();
     readEmpPFPolicy();
     readEmpPFValue();
   }
 
   Future<Null> readBenefit() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    mapImeiPass['IMEI'] = preferences.getString('storeDeviceIMEI');
+    mapImeiPass['pass'] = preferences.getString('pass');
+
     String url = 'benefits';
     var result = await CallAPI().postData(mapImeiPass, url);
     for (var json in result) {
@@ -46,6 +48,10 @@ class _BenefitScreenState extends State<BenefitScreen> {
   }
 
   Future<Null> readEmpPFPolicy() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    mapImeiPass['IMEI'] = preferences.getString('storeDeviceIMEI');
+    mapImeiPass['pass'] = preferences.getString('pass');
+
     String url = 'EmpPFPolicy';
     var result = await CallAPI().postData(mapImeiPass, url);
     for (var json in result) {
@@ -56,6 +62,10 @@ class _BenefitScreenState extends State<BenefitScreen> {
   }
 
   Future<Null> readEmpPFValue() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    mapImeiPass['IMEI'] = preferences.getString('storeDeviceIMEI');
+    mapImeiPass['pass'] = preferences.getString('pass');
+
     String url = 'EmpPFValue';
     var result = await CallAPI().postData(mapImeiPass, url);
     for (var json in result) {
@@ -68,7 +78,7 @@ class _BenefitScreenState extends State<BenefitScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: (benefitModels.isEmpty) || (pfPolicyModel == null) || (empPFValueModel == null)
+      body: (benefitModels.isEmpty) && (pfPolicyModel == null) && (empPFValueModel == null)
           ? MyStyle().showProgress()
           : SingleChildScrollView(
               child: Column(
@@ -83,6 +93,9 @@ class _BenefitScreenState extends State<BenefitScreen> {
   }
 
   Widget buildCardEmpValue(BuildContext context) {
+    if (empPFValueModel == null) {
+      return SizedBox.shrink();
+    }
     return ExpandableNotifier(
       child: ScrollOnExpand(
         child: Card(
@@ -296,6 +309,10 @@ class _BenefitScreenState extends State<BenefitScreen> {
   }
 
   Widget buildCardPolicy(BuildContext context) {
+    if (pfPolicyModel == null) {
+      return SizedBox.shrink();
+    }
+
     return ExpandableNotifier(
       child: ScrollOnExpand(
         child: Card(
@@ -396,6 +413,10 @@ class _BenefitScreenState extends State<BenefitScreen> {
   }
 
   Widget buildCardBenefit(BuildContext context) {
+    if (benefitModels == null || benefitModels.isEmpty) {
+      return SizedBox.shrink();
+    }
+
     return ExpandableNotifier(
       child: ScrollOnExpand(
         child: Card(

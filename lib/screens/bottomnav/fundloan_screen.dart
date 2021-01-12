@@ -7,6 +7,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:ASmartApp/themes/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FundLoanScreen extends StatefulWidget {
   FundLoanScreen({Key key}) : super(key: key);
@@ -24,15 +25,15 @@ class _FundLoanScreenState extends State<FundLoanScreen> {
   @override
   void initState() {
     super.initState();
-
-    mapImeiPass['IMEI'] = 'baac1234';
-    mapImeiPass['pass'] = 'baac';
-
     readFundDetail();
     readFundLoan();
   }
 
   Future<Null> readFundLoan() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    mapImeiPass['IMEI'] = preferences.getString('storeDeviceIMEI');
+    mapImeiPass['pass'] = preferences.getString('pass');
+
     var result = await CallAPI().postData(mapImeiPass, 'FundLoan/');
     for (var json in result) {
       FundLoanModel model = FundLoanModel.fromJson(json);
@@ -43,6 +44,10 @@ class _FundLoanScreenState extends State<FundLoanScreen> {
   }
 
   Future<Null> readFundDetail() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    mapImeiPass['IMEI'] = preferences.getString('storeDeviceIMEI');
+    mapImeiPass['pass'] = preferences.getString('pass');
+
     var result = await CallAPI().postData(mapImeiPass, 'FundDetail/');
     for (var json in result) {
       FundDetailModel model = FundDetailModel.fromJson(json);
@@ -55,7 +60,7 @@ class _FundLoanScreenState extends State<FundLoanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: (fundLoans.length == 0) || (fundDetailModels.length == 0)
+      body: (fundLoans.isEmpty) && (fundDetailModels.isEmpty)
           ? MyStyle().showProgress()
           : SingleChildScrollView(
               child: Column(
@@ -69,6 +74,10 @@ class _FundLoanScreenState extends State<FundLoanScreen> {
   }
 
   Widget buildCardContractStatus(BuildContext context) {
+    if (fundLoans == null || fundLoans.isEmpty) {
+      return SizedBox.shrink();
+    }
+
     return ExpandableNotifier(
       child: ScrollOnExpand(
         child: Card(
@@ -192,6 +201,10 @@ class _FundLoanScreenState extends State<FundLoanScreen> {
   }
 
   Widget buildCardContractInfo(BuildContext context) {
+    if (fundDetailModels == null || fundDetailModels.isEmpty) {
+      return SizedBox.shrink();
+    }
+
     return ExpandableNotifier(
       child: ScrollOnExpand(
         child: Card(
