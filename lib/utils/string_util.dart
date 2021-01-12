@@ -2,6 +2,9 @@ import 'package:intl/intl.dart';
 
 class StringUtil {
   static String toFormatAmount(String string) {
+    if (StringUtil.isNullOrEmpty(string)) {
+      return '0';
+    }
     double douNumber = double.parse(string.trim());
     var myFormat = NumberFormat('#,###', 'en_US');
     String result = myFormat.format(douNumber);
@@ -54,5 +57,9 @@ class StringUtil {
     return content;
   }
 
-  static String toTruncDateFormat(DateTime dateTime,{String format}) => dateTime == null ? '' : format == null ? DateFormat('dd/MM/yyyy').format(dateTime) : DateFormat(format).format(dateTime) ;
+  static String toTruncDateFormat(DateTime dateTime, {String format}) => dateTime == null
+      ? ''
+      : format == null
+          ? DateFormat('dd/MM/yyyy').format(dateTime)
+          : DateFormat(format).format(dateTime);
 }

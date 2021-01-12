@@ -63,7 +63,12 @@ class MyStyle {
   }
 
   String formatAmount(String string) {
-    double douNumber = double.parse(string.trim());
+    double douNumber;
+    if (string == null) {
+      douNumber = 0;
+    } else {
+      douNumber = double.parse(string.trim());
+    }
     var myFormat = NumberFormat('#,###', 'en_US');
     String result = myFormat.format(douNumber);
     return result;

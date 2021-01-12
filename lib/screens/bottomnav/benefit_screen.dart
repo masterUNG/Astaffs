@@ -265,7 +265,7 @@ class _BenefitScreenState extends State<BenefitScreen> {
                 flex: 6,
                 child: Text(
                   '${value1 ?? ''}  ${unit ?? ''}',
-                  style: Theme.of(context).textTheme.normalBlack,
+                  style: Theme.of(context).textTheme.smallBlack,
                   textAlign: TextAlign.end,
                 ),
               ),
@@ -284,7 +284,7 @@ class _BenefitScreenState extends State<BenefitScreen> {
                 flex: 6,
                 child: Text(
                   '${value2 ?? ''}  ${unit ?? ''}',
-                  style: Theme.of(context).textTheme.normalBlack,
+                  style: Theme.of(context).textTheme.smallBlack,
                   textAlign: TextAlign.end,
                 ),
               ),
