@@ -33,6 +33,10 @@ class _BenefitScreenState extends State<BenefitScreen> {
   }
 
   Future<Null> readBenefit() async {
+    setState(() {
+      benefitModels.clear();
+    });
+
     SharedPreferences preferences = await SharedPreferences.getInstance();
     mapImeiPass['IMEI'] = preferences.getString('storeDeviceIMEI');
     mapImeiPass['pass'] = preferences.getString('pass');
@@ -48,6 +52,10 @@ class _BenefitScreenState extends State<BenefitScreen> {
   }
 
   Future<Null> readEmpPFPolicy() async {
+    setState(() {
+      pfPolicyModel = null;
+    });
+
     SharedPreferences preferences = await SharedPreferences.getInstance();
     mapImeiPass['IMEI'] = preferences.getString('storeDeviceIMEI');
     mapImeiPass['pass'] = preferences.getString('pass');
@@ -62,6 +70,10 @@ class _BenefitScreenState extends State<BenefitScreen> {
   }
 
   Future<Null> readEmpPFValue() async {
+    setState(() {
+      empPFValueModel = null;
+    });
+
     SharedPreferences preferences = await SharedPreferences.getInstance();
     mapImeiPass['IMEI'] = preferences.getString('storeDeviceIMEI');
     mapImeiPass['pass'] = preferences.getString('pass');
@@ -75,19 +87,26 @@ class _BenefitScreenState extends State<BenefitScreen> {
     }
   }
 
+  Future<Null> refreshData() async {
+    readBenefit();
+    readEmpPFPolicy();
+    readEmpPFValue();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: (benefitModels.isEmpty) && (pfPolicyModel == null) && (empPFValueModel == null)
           ? MyStyle().showProgress()
-          : SingleChildScrollView(
-              child: Column(
+          : RefreshIndicator(
+              child: ListView(
                 children: [
                   buildCardBenefit(context),
                   buildCardPolicy(context),
                   buildCardEmpValue(context),
                 ],
               ),
+              onRefresh: refreshData,
             ),
     );
   }
@@ -222,7 +241,7 @@ class _BenefitScreenState extends State<BenefitScreen> {
                         'บาท',
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top:8.0),
+                        padding: const EdgeInsets.only(top: 8.0),
                         child: Row(
                           children: [
                             Text(
@@ -252,7 +271,7 @@ class _BenefitScreenState extends State<BenefitScreen> {
 
   Widget buildCardEmpValueData(String header, String label1, String value1, String label2, String value2, String unit) {
     return Card(
-      elevation: 2 ,
+      elevation: 2,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,

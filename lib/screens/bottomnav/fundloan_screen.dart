@@ -30,6 +30,9 @@ class _FundLoanScreenState extends State<FundLoanScreen> {
   }
 
   Future<Null> readFundLoan() async {
+    setState(() {
+      fundLoans.clear();
+    });
     SharedPreferences preferences = await SharedPreferences.getInstance();
     mapImeiPass['IMEI'] = preferences.getString('storeDeviceIMEI');
     mapImeiPass['pass'] = preferences.getString('pass');
@@ -44,6 +47,9 @@ class _FundLoanScreenState extends State<FundLoanScreen> {
   }
 
   Future<Null> readFundDetail() async {
+    setState(() {
+      fundDetailModels.clear();
+    });
     SharedPreferences preferences = await SharedPreferences.getInstance();
     mapImeiPass['IMEI'] = preferences.getString('storeDeviceIMEI');
     mapImeiPass['pass'] = preferences.getString('pass');
@@ -57,19 +63,26 @@ class _FundLoanScreenState extends State<FundLoanScreen> {
     }
   }
 
+  Future<Null> refreshData() async {
+    readFundLoan();
+    readFundDetail();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: (fundLoans.isEmpty) && (fundDetailModels.isEmpty)
           ? MyStyle().showProgress()
-          : SingleChildScrollView(
-              child: Column(
+          : RefreshIndicator(
+              child: ListView(
                 children: [
                   buildCardContractInfo(context),
                   buildCardContractStatus(context),
                 ],
               ),
-            ),
+        onRefresh: refreshData,
+      ),
     );
   }
 

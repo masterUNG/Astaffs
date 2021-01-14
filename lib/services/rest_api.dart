@@ -17,8 +17,8 @@ class CallAPI {
         'Content-Type': 'application/x-www-form-urlencoded'
       };
 
-  final String baseAPIURL =
-      'https://www.itgenius.co.th/sandbox_api/baacstaffapi/public/api/';
+  // final String baseAPIURL =
+  //     'https://www.itgenius.co.th/sandbox_api/baacstaffapi/public/api/';
   final String baseAPIURLBAAC = 'https://dinodev.baac.or.th/wsBEM/';
   final String baseURLBAACV2 = 'https://dinodev.baac.or.th/wsBEMV2/';
 
@@ -46,26 +46,26 @@ class CallAPI {
   }
 
   // Read Employee Detail
-  Future<RegisterModel> getEmployee(data) async {
-    final response = await http.post(baseAPIURL + 'register',
-        body: jsonEncode(data), headers: _setHeaders());
-    if (response.statusCode == 200) {
-      return registerModelFromJson(response.body);
-    } else {
-      return null;
-    }
-  }
+  // Future<RegisterModel> getEmployee(data) async {
+  //   final response = await http.post(baseAPIURL + 'register',
+  //       body: jsonEncode(data), headers: _setHeaders());
+  //   if (response.statusCode == 200) {
+  //     return registerModelFromJson(response.body);
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   // Read News
-  Future<List<NewsModel>> getNews() async {
-    final response =
-        await http.get(baseAPIURL + 'news', headers: _setHeaders());
-    if (response.body != null) {
-      return newsModelFromJson(response.body);
-    } else {
-      return null;
-    }
-  }
+  // Future<List<NewsModel>> getNews() async {
+  //   final response =
+  //       await http.get(baseAPIURL + 'news', headers: _setHeaders());
+  //   if (response.body != null) {
+  //     return newsModelFromJson(response.body);
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   // CheckIn/Out working time
   checkInAndOut(data, apiURL) async {
@@ -77,15 +77,15 @@ class CallAPI {
   }
 
   // Read Time Datail
-  Future<List<TimeDetailModel>> getTimeDetail() async {
-    final response =
-        await http.get(baseAPIURL + 'timeDetail', headers: _setHeaders());
-    if (response.body != null) {
-      return timeDetailModelFromJson(response.body);
-    } else {
-      return null;
-    }
-  }
+  // Future<List<TimeDetailModel>> getTimeDetail() async {
+  //   final response =
+  //       await http.get(baseURLBAACV2 + 'TimeDetail', headers: _setHeaders());
+  //   if (response.body != null) {
+  //     return timeDetailModelFromJson(response.body);
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   // BAAC Post Time Detail
   Future<List<BaacTimeDetailModel>> baacPostTimeDetail(data) async {
