@@ -26,24 +26,45 @@ class _ContactusScreenState extends State<ContactusScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
-            child: Row(
+            child: Column(
               children: [
-                Expanded(
-                  child: Text(
-                    'ติดต่อทีมงาน แนะนำ ติชม สอบถาม',
-                    style: Theme.of(context).textTheme.smallBlack,
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'ติดต่อทีมงาน แนะนำ ติชม สอบถาม',
+                          style: Theme.of(context).textTheme.smallerBlack,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Expanded(
-                  child: Text(
-                    'กลุ่มงานสารสนเทศ HR ฝ่ายทรัพยากรมนุษย์ (ฝทน.)',
-                    style: Theme.of(context).textTheme.smallBlack,
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'กลุ่มงานสารสนเทศ HR ฝ่ายทรัพยากรมนุษย์ (ฝทน.)',
+                          style: Theme.of(context).textTheme.smallerBlack,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Expanded(
-                  child: Text(
-                    'Aธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธ.ก.ส.)',
-                    style: Theme.of(context).textTheme.smallBlack,
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธ.ก.ส.)',
+                          style: Theme.of(context).textTheme.smallerBlack,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
