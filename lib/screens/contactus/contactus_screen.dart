@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ASmartApp/themes/theme.dart';
 
 class ContactusScreen extends StatefulWidget {
   ContactusScreen({Key key}) : super(key: key);
@@ -18,32 +19,49 @@ class _ContactusScreenState extends State<ContactusScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Text('BAAC A-Staff Team contact', style: TextStyle(fontSize: 20),),
+            child: Text(
+              'BAAC A-Staff Team contact',
+              style: TextStyle(fontSize: 20),
+            ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left:20.0, right: 20.0, bottom: 20.0),
-            child: Text('As with my other dribble challenge, and generally the way I work, I want to get the basics done first and then refine', style: TextStyle(fontSize: 16),),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'ติดต่อทีมงาน แนะนำ ติชม สอบถาม',
+                    style: Theme.of(context).textTheme.smallBlack,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'กลุ่มงานสารสนเทศ HR ฝ่ายทรัพยากรมนุษย์ (ฝทน.)',
+                    style: Theme.of(context).textTheme.smallBlack,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'Aธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธ.ก.ส.)',
+                    style: Theme.of(context).textTheme.smallBlack,
+                  ),
+                ),
+              ],
+            ),
           ),
           ListTile(
             leading: Icon(Icons.email),
             title: Text('อีเมล์'),
-            subtitle: Text('admin@baacstaff.com'),
+            subtitle: Text('hris@baac.or.th'),
             trailing: Icon(Icons.send),
-            onTap: (){},
+            onTap: () {},
           ),
           ListTile(
             leading: Icon(Icons.call),
             title: Text('โทรศัพท์'),
-            subtitle: Text('02-5879965-01'),
+            subtitle: Text('0-2555-0555 ต่อ 8791-3'),
             trailing: Icon(Icons.call_missed_outgoing),
-            onTap: (){},
-          ),
-          ListTile(
-            leading: Icon(Icons.print),
-            title: Text('แฟกซ์'),
-            subtitle: Text('02-5879965-01'),
-            trailing: Icon(Icons.settings_input_hdmi),
-            onTap: (){},
+            onTap: () {},
           ),
         ],
       ),
