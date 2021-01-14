@@ -52,6 +52,8 @@ class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
         macAddress = "Faild to get Device MAC Address";
       }
 
+      _macAddress = macAddress;
+
       BaacRestApiService service = BaacRestApiService();
       UserProfileRs _userProfileRs = await service.empDetail(_imei, pass);
       Navigator.pop(context);
@@ -60,6 +62,10 @@ class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
         return;
       }
       _userProfile = _userProfileRs?.userProfiles[0];
+      setState(() {
+
+      });
+
     } catch (error, stackTrace) {
       if (error is ErrorWebApiException) {
         Navigator.pop(context);
