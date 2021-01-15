@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:ASmartApp/models/rqrs/farmer_info/farmer_detail_rq.dart';
+import 'package:ASmartApp/models/rqrs/farmer_info/farmer_detail_rs.dart';
 import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_activity_attachment_rs.dart';
 import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_activity_detail_rs.dart';
 import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_activity_goal_rs.dart';
@@ -165,6 +167,21 @@ class BaacRestApiService extends BaseBaacWebApiService {
         for (var json in data) {
           UserProfile model = UserProfile.fromJson(json);
           rs.userProfiles.add(model);
+        }
+        return rs;
+      },
+    );
+  }
+
+  Future<FarmerDetailRs> fAMSearchDetail(FarmerDetailRq rq) async {
+    return await post(
+      '${baseUrl}FAMSearchDetail/',
+      rq.toJson(),
+      (data) {
+        FarmerDetailRs rs = FarmerDetailRs()..farmerList = [];
+        for (var json in data) {
+          FarmerDetail model = FarmerDetail.fromJson(json);
+          rs.farmerList.add(model);
         }
         return rs;
       },

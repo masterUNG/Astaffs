@@ -1,3 +1,4 @@
+import 'package:ASmartApp/models/rqrs/farmer_info/farmer_detail_rs.dart';
 import 'package:ASmartApp/models/rqrs/fit_and_firm/faf_activity_detail_rs.dart';
 import 'package:ASmartApp/screens/barcodescan/barcodescan_screen.dart';
 import 'package:ASmartApp/screens/cameragallery/camera_gallery_screen.dart';
@@ -7,6 +8,8 @@ import 'package:ASmartApp/screens/dashboard/dashboard_screen.dart';
 import 'package:ASmartApp/screens/drawer/baac_news_screen.dart';
 import 'package:ASmartApp/screens/drawer/cancel_account_screen.dart';
 import 'package:ASmartApp/screens/employeedetail/employeedetail.dart';
+import 'package:ASmartApp/screens/farmer_info/farmer_criteria.dart';
+import 'package:ASmartApp/screens/farmer_info/farmer_result.dart';
 import 'package:ASmartApp/screens/fit_and_firm/fit_and_firm_goal.dart';
 import 'package:ASmartApp/screens/fit_and_firm/fit_and_firm_home.dart';
 import 'package:ASmartApp/screens/fit_and_firm/fit_and_firm_info.dart';
@@ -24,6 +27,7 @@ import 'package:ASmartApp/screens/welcome/welcome_screen.dart';
 import 'package:ASmartApp/screens/consent/consent_screen.dart';
 import 'package:ASmartApp/screens/pincode/pincode_screen.dart';
 import 'package:flutter/material.dart';
+
 // final Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
 //   "/onboarding": (BuildContext context) => OnboardingScreen(),
 //   "/welcome": (BuildContext context) => WelcomeScreen(),
@@ -100,6 +104,11 @@ Route<dynamic> getRoute(RouteSettings settings) {
       return MaterialPageRoute(settings: settings, builder: (_) => FitAndFirmInfoDetail(activity));
     case '/fit_and_frim_save_activity':
       return MaterialPageRoute(settings: settings, builder: (_) => FitAndFirmSaveActivity());
+    case '/farmer_criteria':
+      return MaterialPageRoute(settings: settings, builder: (_) => FarmerCriteria());
+    case '/farmer_result':
+      final FarmerDetailRs farmerDetailRs = settings.arguments;
+      return MaterialPageRoute(settings: settings, builder: (_) => FarmerResult(farmerDetailRs));
 
     default:
       return MaterialPageRoute(

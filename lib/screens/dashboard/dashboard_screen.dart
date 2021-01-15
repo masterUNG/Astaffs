@@ -9,6 +9,7 @@ import 'package:ASmartApp/utils/confirm_unregister.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ASmartApp/themes/theme.dart';
 
 class DashboardScreen extends StatefulWidget {
   DashboardScreen({Key key}) : super(key: key);
@@ -315,6 +316,14 @@ class _DashboardScreenState extends State<DashboardScreen>
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, '/baacnews');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.rice_bowl),
+            title: Text('ข้อมูลเกษตรกร'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/farmer_criteria');
             },
           ),
           ListTile(
