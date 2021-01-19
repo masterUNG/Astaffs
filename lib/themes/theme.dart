@@ -200,12 +200,36 @@ extension CustomTextStyles on TextTheme {
     fontSize: 18,
   );
 
+  TextStyle get verySmallBlack => const TextStyle(
+    color: Colors.black,
+    fontSize: 12,
+  );
+
+  TextStyle get verySmallBoldBlack => const TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+    fontSize: 12,
+  );
+
   TextStyle get smallerBlack => const TextStyle(
     color: Colors.black,
     fontSize: 14,
   );
 
+  TextStyle get smallerBoldBlack => const TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+    fontSize: 14,
+  );
+
+
   TextStyle get smallBlack => const TextStyle(
+    color: Colors.black,
+    fontSize: 16,
+  );
+
+  TextStyle get smallBoldBlack => const TextStyle(
+    fontWeight: FontWeight.bold,
     color: Colors.black,
     fontSize: 16,
   );
